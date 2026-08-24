@@ -1,0 +1,29 @@
+{
+  "run_id": "960d874858",
+  "url": "http://127.0.0.1:8010",
+  "goal": "验证重构后的平台页面可以打开并且标题存在",
+  "headless": true,
+  "status": "passed",
+  "mode": "mock",
+  "generated_code": "from playwright.async_api import expect\n\nawait page.goto('http://127.0.0.1:8010', wait_until=\"domcontentloaded\")\nassert page.url.rstrip(\"/\") == 'http://127.0.0.1:8010'.rstrip(\"/\"), \"页面跳转到了非预期地址\"\ntitle = await page.title()\nassert title is not None, \"页面标题读取失败\"\n# Goal supplied by the user: 验证重构后的平台页面可以打开并且标题存在\n",
+  "result": {
+    "status": "passed",
+    "error": null,
+    "url": "http://127.0.0.1:8010",
+    "final_url": "http://127.0.0.1:8010/",
+    "title": "AI Playwright Tester",
+    "duration_ms": 5256,
+    "console": [],
+    "page_errors": [],
+    "artifact_errors": [],
+    "artifacts": {
+      "screenshot": "/api/runs/960d874858/screenshot.png",
+      "trace": "/api/runs/960d874858/trace.zip"
+    },
+    "started_at": "2026-08-24T04:02:01.320178+00:00",
+    "finished_at": "2026-08-24T04:02:06.639662+00:00"
+  },
+  "error": null,
+  "started_at": "2026-08-24T04:02:01.320178+00:00",
+  "finished_at": "2026-08-24T04:02:06.639662+00:00"
+}

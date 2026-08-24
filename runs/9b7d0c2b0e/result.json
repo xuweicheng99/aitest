@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "error": null,
+  "url": "http://127.0.0.1:8001",
+  "final_url": "http://127.0.0.1:8001/",
+  "title": "AI Playwright Tester",
+  "console": [],
+  "page_errors": [],
+  "artifacts": {
+    "screenshot": "/api/runs/9b7d0c2b0e/screenshot.png",
+    "trace": "/api/runs/9b7d0c2b0e/trace.zip"
+  },
+  "started_at": "2026-08-24T01:24:04.790886+00:00",
+  "finished_at": "2026-08-24T01:24:05.979565+00:00"
+}

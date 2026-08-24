@@ -1,0 +1,15 @@
+{
+  "status": "failed",
+  "error": "Page URL expected to be 'http://127.0.0.1:8000'\nActual value: http://127.0.0.1:8000/ \nCall log:\n  - Expect \"to_have_url\" with timeout 10000ms\n    23 × locator resolved to <html lang=\"zh-CN\">…</html>\n       - unexpected value \"http://127.0.0.1:8000/\"\n\nAria snapshot:\n- main:\n  - paragraph: AI QA WORKBENCH\n  - heading \"AI Playwright Tester\" [level=1]\n  - paragraph: 输入网址和测试目标，自动生成并执行 Playwright 测试。\n  - text: 服务在线 目标网址\n  - textbox \"目标网址\": https://example.com\n  - text: 测试目标\n  - textbox \"测试目标\": 验证页面可以正常打开，并检查页面标题存在\n  - checkbox \"无头模式\" [checked]\n  - text: 无头模式\n  - button \"生成并执行测试\"\n  - heading \"执行结果\" [level=2]\n  - term: Run ID\n  - definition\n  - term: 最终地址\n  - definition\n  - term: 页面标题\n  - definition\n  - text: 查看截图 下载 Trace\n  - heading \"生成的 Playwright 代码\" [level=2]\n  - code\n  - heading \"运行日志\" [level=2]\n  - code",
+  "url": "http://127.0.0.1:8000",
+  "final_url": "http://127.0.0.1:8000/",
+  "title": "AI Playwright Tester",
+  "console": [],
+  "page_errors": [],
+  "artifacts": {
+    "screenshot": "/api/runs/dcbcf6f482/screenshot.png",
+    "trace": "/api/runs/dcbcf6f482/trace.zip"
+  },
+  "started_at": "2026-08-24T01:22:50.943358+00:00",
+  "finished_at": "2026-08-24T01:23:03.962803+00:00"
+}

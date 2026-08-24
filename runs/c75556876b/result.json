@@ -1,0 +1,67 @@
+{
+  "run_id": "c75556876b",
+  "url": "https://example.com",
+  "goal": "验证页面可以正常打开，并检查页面标题存在",
+  "headless": true,
+  "status": "passed",
+  "mode": "llm",
+  "generated_code": "from playwright.async_api import expect\n\nawait page.goto('https://example.com', wait_until='domcontentloaded')\nawait expect(page.get_by_text('Example Domain', exact=True)).to_contain_text('Example Domain')\n# Agent finished: 页面已成功打开，且页面标题存在。",
+  "result": {
+    "status": "passed",
+    "error": null,
+    "url": "https://example.com",
+    "final_url": "https://example.com/",
+    "title": "Example Domain",
+    "duration_ms": 9299,
+    "console": [],
+    "page_errors": [],
+    "artifact_errors": [],
+    "agent_steps": [
+      {
+        "step": 1,
+        "url": "https://example.com/",
+        "title": "Example Domain",
+        "action": {
+          "action": "assert_text",
+          "target": {
+            "strategy": "text",
+            "value": "Example Domain",
+            "role": null,
+            "exact": true
+          },
+          "value": null,
+          "expected": "Example Domain",
+          "key": null,
+          "message": ""
+        },
+        "success": true,
+        "error": null
+      },
+      {
+        "step": 2,
+        "url": "https://example.com/",
+        "title": "Example Domain",
+        "action": {
+          "action": "finish",
+          "target": null,
+          "value": null,
+          "expected": null,
+          "key": null,
+          "message": "页面已成功打开，且页面标题存在。"
+        },
+        "success": true,
+        "error": null
+      }
+    ],
+    "step_count": 2,
+    "artifacts": {
+      "screenshot": "/api/runs/c75556876b/screenshot.png",
+      "trace": "/api/runs/c75556876b/trace.zip"
+    },
+    "started_at": "2026-08-24T13:54:40.828452+00:00",
+    "finished_at": "2026-08-24T13:54:50.187021+00:00"
+  },
+  "error": null,
+  "started_at": "2026-08-24T13:54:40.828452+00:00",
+  "finished_at": "2026-08-24T13:54:50.187021+00:00"
+}

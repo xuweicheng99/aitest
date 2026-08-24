@@ -1,0 +1,31 @@
+{
+  "run_id": "5ab869cbc0",
+  "url": "https://example.com",
+  "goal": "验证页面可以正常打开，并检查页面标题存在",
+  "headless": true,
+  "status": "failed",
+  "mode": "llm",
+  "generated_code": "from playwright.async_api import expect\n\nawait page.goto('https://example.com', wait_until='domcontentloaded')",
+  "result": {
+    "status": "failed",
+    "error": "NotImplementedError",
+    "url": "https://example.com",
+    "final_url": "https://example.com",
+    "title": "",
+    "duration_ms": 7,
+    "console": [],
+    "page_errors": [],
+    "artifact_errors": [],
+    "agent_steps": [],
+    "step_count": 0,
+    "artifacts": {
+      "screenshot": null,
+      "trace": null
+    },
+    "started_at": "2026-08-24T13:24:10.489672+00:00",
+    "finished_at": "2026-08-24T13:24:10.556168+00:00"
+  },
+  "error": null,
+  "started_at": "2026-08-24T13:24:10.489672+00:00",
+  "finished_at": "2026-08-24T13:24:10.556168+00:00"
+}

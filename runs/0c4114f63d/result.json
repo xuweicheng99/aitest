@@ -1,0 +1,62 @@
+{
+  "run_id": "0c4114f63d",
+  "url": "http://127.0.0.1:8011",
+  "goal": "观察真实页面，验证当前页面地址正确并完成测试",
+  "headless": true,
+  "status": "passed",
+  "mode": "mock",
+  "generated_code": "from playwright.async_api import expect\n\nawait page.goto('http://127.0.0.1:8011', wait_until='domcontentloaded')\nassert page.url.rstrip('/') == 'http://127.0.0.1:8011'.rstrip('/')\n# Agent finished: 模拟 Agent 基础页面访问验证通过",
+  "result": {
+    "status": "passed",
+    "error": null,
+    "url": "http://127.0.0.1:8011",
+    "final_url": "http://127.0.0.1:8011/",
+    "title": "AI Playwright Tester",
+    "duration_ms": 5506,
+    "console": [],
+    "page_errors": [],
+    "artifact_errors": [],
+    "agent_steps": [
+      {
+        "step": 1,
+        "url": "http://127.0.0.1:8011/",
+        "title": "AI Playwright Tester",
+        "action": {
+          "action": "assert_url",
+          "target": null,
+          "value": null,
+          "expected": "http://127.0.0.1:8011",
+          "key": null,
+          "message": "验证目标页面已经打开"
+        },
+        "success": true,
+        "error": null
+      },
+      {
+        "step": 2,
+        "url": "http://127.0.0.1:8011/",
+        "title": "AI Playwright Tester",
+        "action": {
+          "action": "finish",
+          "target": null,
+          "value": null,
+          "expected": null,
+          "key": null,
+          "message": "模拟 Agent 基础页面访问验证通过"
+        },
+        "success": true,
+        "error": null
+      }
+    ],
+    "step_count": 2,
+    "artifacts": {
+      "screenshot": "/api/runs/0c4114f63d/screenshot.png",
+      "trace": "/api/runs/0c4114f63d/trace.zip"
+    },
+    "started_at": "2026-08-24T09:50:39.296589+00:00",
+    "finished_at": "2026-08-24T09:50:44.861869+00:00"
+  },
+  "error": null,
+  "started_at": "2026-08-24T09:50:39.296589+00:00",
+  "finished_at": "2026-08-24T09:50:44.861869+00:00"
+}

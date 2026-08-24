@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Playwright Tester</title>
+    <link rel="stylesheet" href="/static/styles.css?v=2" />
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <div>
+          <p class="eyebrow">AI QA WORKBENCH</p>
+          <h1>AI Playwright Tester</h1>
+          <p class="subtitle">输入网址和测试目标，自动生成并执行 Playwright 测试。</p>
+        </div>
+        <span id="modeBadge" class="badge">检测中</span>
+      </header>
+
+      <section class="panel form-panel">
+        <form id="runForm">
+          <label>目标网址<input id="url" type="url" value="https://example.com" required /></label>
+          <label>测试目标<textarea id="goal" rows="4" required>验证页面可以正常打开，并检查页面标题存在</textarea></label>
+          <div class="actions">
+            <label class="check"><input id="headless" type="checkbox" checked /> 无头模式</label>
+            <button id="runButton" type="submit">生成并执行测试</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="loading" class="panel status" hidden>正在生成测试并启动浏览器，请稍候…</section>
+      <section id="error" class="panel error" hidden></section>
+
+      <section id="result" class="result-grid" hidden>
+        <div class="panel summary">
+          <div class="result-head"><h2>执行结果</h2><span id="statusBadge" class="badge"></span></div>
+          <dl>
+            <div><dt>Run ID</dt><dd id="runId"></dd></div>
+            <div><dt>最终地址</dt><dd id="finalUrl"></dd></div>
+            <div><dt>页面标题</dt><dd id="title"></dd></div>
+          </dl>
+          <div class="links"><a id="screenshotLink" target="_blank">查看截图</a><a id="traceLink" target="_blank">下载 Trace</a></div>
+        </div>
+        <div class="panel code-panel"><h2>生成的 Playwright 代码</h2><pre><code id="code"></code></pre></div>
+        <div class="panel log-panel"><h2>运行日志</h2><pre><code id="logs"></code></pre></div>
+      </section>
+    </main>
+    <script src="/static/app.js?v=1"></script>
+  </body>
+</html>

@@ -1,6 +1,17 @@
-# AI Playwright Tester
+# AI Test Workbench
 
-一个使用 AI 多轮观察、决策并执行 Playwright 浏览器测试的轻量平台。
+一个从需求文档生成结构化测试用例，并使用 AI 多轮观察、决策和
+Playwright 执行浏览器测试的轻量平台。
+
+## 需求文档工作流
+
+1. 上传 `.txt`、`.md` 或 `.docx` 需求文档，也可直接粘贴需求。
+2. 模型提取功能、前置条件、业务规则和验收标准，生成正向、反向、
+   边界、权限和状态用例。
+3. 在界面中修改用例、优先级、步骤和预期结果，并选择需要执行的用例。
+4. 系统逐条调用通用浏览器 Agent，并汇总通过、失败、截图和 Trace。
+
+上传文档最大 5 MB，解析后需求内容最多 6 万字。DOCX 仅读取正文内容。
 
 ## 核心流程
 
@@ -15,6 +26,21 @@
 Agent 不再返回任意 Python 代码。它只能选择导航、点击、输入、按键、勾选、
 选择、页面断言、完成或失败等结构化动作。接口中的 `generated_code` 是后端根据
 实际成功或尝试过的动作还原出的 Playwright 代码，方便阅读和复用。
+
+每轮页面观察会为可见可操作元素生成稳定的临时引用（如 `el_001`）。模型优先
+返回 `element_ref`，后端再把引用解析为当前页面中的唯一 Playwright 定位器，
+从而将“选择哪个元素”与“如何编写定位器”分离。旧版 `target` 定位器仍作为兼容
+降级；页面变化导致引用过期时，系统会重新观察并反馈可用引用，而不会执行任意
+猜测的选择器。
+
+模型动作在进入 Pydantic 校验前会统一归一化常见字段别名、动作参数和匹配模式，
+例如 `equals` 转为 `exact`、`include` 转为 `contains`、`regexp` 转为 `regex`。
+网页差异因此主要由观察器和执行器处理，不再要求为每个网站修改模型字段协议。
+
+定位与断言是站点无关的：Agent 结合 DOM、ARIA、可交互元素和截图选择
+语义定位器，并可为同一元素提供多个备选策略。执行器会自动降级尝试，
+循环会拒绝再次执行完全相同的失败动作。URL、标题和文本断言均支持
+`exact`、`contains` 和 `regex` 匹配。
 
 ## 后端结构
 
@@ -86,6 +112,7 @@ MOCK_MODE=false
 | `AGENT_MAX_STEPS` | `12` | 单次测试最多决策步数 |
 | `AGENT_MAX_CONSECUTIVE_FAILURES` | `3` | 连续动作失败终止阈值 |
 | `AGENT_ACTION_TIMEOUT_MS` | `10000` | 单个 Playwright 动作超时 |
+| `AGENT_NAVIGATION_TIMEOUT_MS` | `30000` | 页面建立连接的超时；DOM 超时但页面可用时继续执行 |
 | `AGENT_OBSERVATION_CHARS` | `12000` | 发送给模型的 ARIA 内容上限 |
 | `AGENT_DOM_CHARS` | `12000` | 发送给模型的清理后 DOM 内容上限 |
 | `AGENT_OBSERVATION_DELAY_MS` | `250` | 动作后等待页面稳定的时间 |
@@ -100,6 +127,8 @@ MOCK_MODE=false
 | GET | `/api/health` | 查看服务和 Agent 模式 |
 | POST | `/api/run` | 原前端兼容入口 |
 | POST | `/api/runs` | 创建并同步执行测试 |
+| POST | `/api/plans/generate` | 从需求文档或文本生成测试计划 |
+| POST | `/api/plans/execute` | 执行已审阅的测试计划并返回汇总报告 |
 | GET | `/api/runs?limit=20` | 查询最近运行记录 |
 | GET | `/api/runs/{run_id}` | 查询运行详情 |
 | GET | `/api/runs/{run_id}/screenshot.png` | 查看截图 |

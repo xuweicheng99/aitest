@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies import get_run_service
-from app.api.routes import health, runs
+from app.api.routes import health, plans, runs
 from app.schemas.run import RunRequest, RunResponse
 from app.services.run_service import RunService
 
@@ -9,6 +9,7 @@ from app.services.run_service import RunService
 api_router = APIRouter(prefix="/api")
 api_router.include_router(health.router)
 api_router.include_router(runs.router)
+api_router.include_router(plans.router)
 
 
 @api_router.post("/run", response_model=RunResponse, include_in_schema=False)

@@ -15,6 +15,11 @@ class ModelProviderError(AppError):
     code = "model_provider_error"
 
 
+class InvalidRequestError(AppError):
+    status_code = 400
+    code = "invalid_request"
+
+
 class RunNotFoundError(AppError):
     status_code = 404
     code = "run_not_found"

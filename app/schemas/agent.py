@@ -16,13 +16,16 @@ ActionType = Literal[
     "assert_visible",
     "assert_text",
     "assert_url",
+    "assert_title",
     "finish",
     "fail",
 ]
 
+MatchType = Literal["exact", "contains", "regex"]
+
 
 class LocatorTarget(BaseModel):
-    strategy: Literal["role", "label", "placeholder", "text", "test_id", "css"]
+    strategy: Literal["role", "label", "placeholder", "text", "test_id", "id", "css", "xpath"]
     value: str = Field(..., min_length=1, max_length=1000)
     role: str | None = Field(default=None, max_length=100)
     exact: bool = False
@@ -36,9 +39,12 @@ class LocatorTarget(BaseModel):
 
 class AgentDecision(BaseModel):
     action: ActionType
+    element_ref: str | None = Field(default=None, min_length=1, max_length=50)
     target: LocatorTarget | None = None
+    fallback_targets: list[LocatorTarget] = Field(default_factory=list, max_length=6)
     value: str | None = Field(default=None, max_length=4000)
     expected: str | None = Field(default=None, max_length=4000)
+    match: MatchType = "contains"
     key: str | None = Field(default=None, max_length=100)
     message: str = Field(default="", max_length=1000)
 
@@ -54,14 +60,18 @@ class AgentDecision(BaseModel):
             "assert_visible",
             "assert_text",
         }
-        if self.action in target_actions and self.target is None:
-            raise ValueError(f"{self.action} 动作必须提供 target")
+        if self.action in target_actions and self.target is None and self.element_ref is None:
+            raise ValueError(f"{self.action} 动作必须提供 element_ref 或 target")
         if self.action in {"navigate", "fill", "select"} and self.value is None:
             raise ValueError(f"{self.action} 动作必须提供 value")
         if self.action == "press" and self.key is None:
             raise ValueError("press 动作必须提供 key")
-        if self.action in {"assert_text", "assert_url"} and self.expected is None:
+        if self.action in {"assert_text", "assert_url", "assert_title"} and self.expected is None:
             raise ValueError(f"{self.action} 动作必须提供 expected")
+        if self.fallback_targets and self.action not in target_actions:
+            raise ValueError("只有需要定位元素的动作才能提供 fallback_targets")
+        if self.action == "assert_url" and "match" not in self.model_fields_set:
+            self.match = "exact"
         return self
 
 
@@ -71,6 +81,7 @@ class PageObservation(BaseModel):
     dom_snapshot: str = ""
     aria_snapshot: str
     interactive_elements: list[dict[str, str | bool | None]] = Field(default_factory=list)
+    element_refs: dict[str, LocatorTarget] = Field(default_factory=dict, exclude=True)
     screenshot_data_url: str | None = Field(default=None, exclude=True)
 
 

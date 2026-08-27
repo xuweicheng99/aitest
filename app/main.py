@@ -24,8 +24,8 @@ def create_app() -> FastAPI:
 
     application = FastAPI(
         title="AI Playwright Tester",
-        version="0.2.0",
-        description="Generate and execute Playwright Python tests with an LLM.",
+        version="0.3.0",
+        description="Generate test plans from requirements and execute them with an AI browser agent.",
     )
     application.add_middleware(
         CORSMiddleware,

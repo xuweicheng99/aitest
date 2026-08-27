@@ -5,27 +5,59 @@ import base64
 from playwright.async_api import Page
 
 from app.core.config import Settings
-from app.schemas.agent import PageObservation
+from app.schemas.agent import LocatorTarget, PageObservation
 
 
 INTERACTIVE_ELEMENTS_SCRIPT = """
-(elements) => elements
+(elements) => {
+  window.__aiTestRefCounter = window.__aiTestRefCounter || 0;
+  return elements
   .filter((element) => {
     const style = window.getComputedStyle(element);
     const rect = element.getBoundingClientRect();
-    return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const inViewport = rect.bottom > 0 && rect.right > 0 &&
+      rect.top < window.innerHeight && rect.left < window.innerWidth;
+    const topElement = document.elementFromPoint(
+      Math.max(0, Math.min(window.innerWidth - 1, centerX)),
+      Math.max(0, Math.min(window.innerHeight - 1, centerY))
+    );
+    const unobscured = !inViewport || !topElement ||
+      element === topElement || element.contains(topElement) || topElement.contains(element);
+    const visibleByBrowser = typeof element.checkVisibility === 'function'
+      ? element.checkVisibility({checkOpacity: true, checkVisibilityCSS: true})
+      : style.visibility !== 'hidden' && style.display !== 'none' && style.opacity !== '0';
+    return visibleByBrowser &&
+      style.pointerEvents !== 'none' && rect.width > 0 && rect.height > 0 && unobscured;
   })
   .slice(0, 100)
-  .map((element) => ({
-    tag: element.tagName.toLowerCase(),
-    role: element.getAttribute('role'),
-    text: (element.innerText || element.getAttribute('aria-label') || '').trim().slice(0, 300),
-    label: element.getAttribute('aria-label'),
-    placeholder: element.getAttribute('placeholder'),
-    test_id: element.getAttribute('data-testid'),
-    type: element.getAttribute('type'),
-    disabled: Boolean(element.disabled)
-  }))
+  .map((element) => {
+    let ref = element.getAttribute('data-ai-test-ref');
+    if (!ref) {
+      window.__aiTestRefCounter += 1;
+      ref = `el_${String(window.__aiTestRefCounter).padStart(3, '0')}`;
+      element.setAttribute('data-ai-test-ref', ref);
+    }
+    return {
+      ref,
+      tag: element.tagName.toLowerCase(),
+      id: element.id || null,
+      name: element.getAttribute('name'),
+      role: element.getAttribute('role'),
+      text: (element.innerText || element.getAttribute('aria-label') || '').trim().slice(0, 300),
+      label: element.getAttribute('aria-label'),
+      placeholder: element.getAttribute('placeholder'),
+      test_id: element.getAttribute('data-testid'),
+      type: element.getAttribute('type'),
+      disabled: Boolean(element.disabled),
+      editable: !element.disabled && !element.readOnly &&
+        (element.matches('input,textarea,select') || element.isContentEditable),
+      locator_strategy: 'css',
+      locator_value: `[data-ai-test-ref="${ref}"]`
+    };
+  });
+}
 """
 
 
@@ -40,12 +72,14 @@ class PageObserver:
         aria_snapshot = await self._aria_snapshot(page)
         interactive_elements = await self._interactive_elements(page)
         screenshot_data_url = await self._screenshot_data_url(page)
+        element_refs = self._build_element_refs(interactive_elements)
         return PageObservation(
             url=page.url,
             title=title,
             dom_snapshot=dom_snapshot[: self.settings.agent_dom_chars],
             aria_snapshot=aria_snapshot[: self.settings.agent_observation_chars],
             interactive_elements=interactive_elements,
+            element_refs=element_refs,
             screenshot_data_url=screenshot_data_url,
         )
 
@@ -88,6 +122,32 @@ class PageObserver:
             return values if isinstance(values, list) else []
         except Exception:
             return []
+
+    @staticmethod
+    def _build_element_refs(
+        elements: list[dict[str, str | bool | None]],
+    ) -> dict[str, LocatorTarget]:
+        refs: dict[str, LocatorTarget] = {}
+        for element in elements:
+            ref = element.get("ref")
+            strategy = element.get("locator_strategy")
+            value = element.get("locator_value")
+            if not isinstance(ref, str) or not isinstance(strategy, str) or not isinstance(value, str) or not value:
+                continue
+            role = element.get("role")
+            if strategy == "label" and not value:
+                continue
+            if strategy == "role":
+                strategy = "text"
+            try:
+                refs[ref] = LocatorTarget(
+                    strategy=strategy,
+                    value=value,
+                    role=role if isinstance(role, str) and role else None,
+                )
+            except Exception:
+                continue
+        return refs
 
     async def _screenshot_data_url(self, page: Page) -> str | None:
         if not self.settings.agent_include_screenshot:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Literal
+from urllib.parse import urlparse
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -16,8 +17,11 @@ class RunRequest(BaseModel):
     @classmethod
     def validate_url(cls, value: str) -> str:
         value = value.strip()
-        if not value.startswith(("http://", "https://")):
+        parsed = urlparse(value)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             raise ValueError("URL 必须以 http:// 或 https:// 开头")
+        if parsed.username or parsed.password:
+            raise ValueError("URL 不能包含用户名或密码")
         return value
 
     @field_validator("goal")

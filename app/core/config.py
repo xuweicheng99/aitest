@@ -45,6 +45,7 @@ class Settings:
     mock_mode: bool
     json_response_mode: bool
     headless: bool
+    ignore_https_errors: bool
     model_timeout_seconds: int
     test_timeout_seconds: int
     max_concurrent_runs: int
@@ -52,6 +53,7 @@ class Settings:
     agent_max_steps: int
     agent_max_consecutive_failures: int
     agent_action_timeout_ms: int
+    agent_navigation_timeout_ms: int
     agent_observation_chars: int
     agent_dom_chars: int
     agent_observation_delay_ms: int
@@ -82,6 +84,7 @@ def get_settings() -> Settings:
         mock_mode=_as_bool("MOCK_MODE", True),
         json_response_mode=_as_bool("OPENAI_JSON_RESPONSE_MODE", True),
         headless=_as_bool("PLAYWRIGHT_HEADLESS", True),
+        ignore_https_errors=_as_bool("PLAYWRIGHT_IGNORE_HTTPS_ERRORS", False),
         model_timeout_seconds=_as_int("MODEL_TIMEOUT_SECONDS", 90),
         test_timeout_seconds=_as_int("TEST_TIMEOUT_SECONDS", 180),
         max_concurrent_runs=_as_int("MAX_CONCURRENT_RUNS", 2),
@@ -89,6 +92,7 @@ def get_settings() -> Settings:
         agent_max_steps=_as_int("AGENT_MAX_STEPS", 12),
         agent_max_consecutive_failures=_as_int("AGENT_MAX_CONSECUTIVE_FAILURES", 3),
         agent_action_timeout_ms=_as_int("AGENT_ACTION_TIMEOUT_MS", 10_000, 100),
+        agent_navigation_timeout_ms=_as_int("AGENT_NAVIGATION_TIMEOUT_MS", 30_000, 1000),
         agent_observation_chars=_as_int("AGENT_OBSERVATION_CHARS", 12_000, 1000),
         agent_dom_chars=_as_int("AGENT_DOM_CHARS", 12_000, 1000),
         agent_observation_delay_ms=_as_int("AGENT_OBSERVATION_DELAY_MS", 250),

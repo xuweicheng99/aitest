@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Test Workbench</title>
+    <link rel="stylesheet" href="/static/styles.css?v=4" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">AT</span><div><strong>AI Test Workbench</strong><span>需求驱动的浏览器自动化测试</span></div></div>
+      <span id="modeBadge" class="badge neutral">检测中</span>
+    </header>
+
+    <main class="shell">
+      <nav class="tabs" aria-label="测试模式">
+        <button class="tab active" type="button" data-view="requirements">需求文档</button>
+        <button class="tab" type="button" data-view="single">单用例</button>
+      </nav>
+
+      <section id="requirementsView" class="workspace">
+        <div class="workspace-head"><div><h1>从需求生成测试计划</h1><p>生成后可审阅和修改用例，再交给浏览器 Agent 执行。</p></div></div>
+
+        <form id="planForm" class="input-band">
+          <div class="field url-field"><label for="planUrl">测试环境 URL</label><input id="planUrl" type="url" value="https://example.com" required /></div>
+          <div class="field count-field"><label for="maxCases">最多用例</label><input id="maxCases" type="number" min="1" max="30" value="8" /></div>
+          <div class="field document-field"><label for="requirementFile">需求文档</label><input id="requirementFile" type="file" accept=".txt,.md,.docx" /></div>
+          <div class="divider"><span>或直接粘贴需求</span></div>
+          <div class="field full-field"><label for="requirementsText">需求内容</label><textarea id="requirementsText" rows="9" placeholder="粘贴功能说明、业务规则和验收标准"></textarea></div>
+          <div class="form-actions"><label class="check"><input id="planHeadless" type="checkbox" checked /> 无头模式</label><button id="generateButton" class="primary" type="submit">生成测试计划</button></div>
+        </form>
+
+        <section id="planReview" class="review" hidden>
+          <div class="section-head">
+            <div><p class="section-kicker">测试计划</p><h2 id="planName"></h2><p id="planSummary"></p></div>
+            <div class="section-actions"><button id="addCaseButton" class="secondary" type="button">添加用例</button><button id="executePlanButton" class="primary" type="button">执行已选用例</button></div>
+          </div>
+          <div id="assumptions" class="assumptions" hidden></div>
+          <div class="case-toolbar"><span id="caseCount"></span><label class="check"><input id="selectAllCases" type="checkbox" checked /> 全选</label></div>
+          <div id="caseList" class="case-list"></div>
+        </section>
+
+        <section id="planResults" class="report" hidden>
+          <div class="section-head"><div><p class="section-kicker">执行报告</p><h2>测试计划结果</h2></div><div id="reportStats" class="stats"></div></div>
+          <div class="table-wrap"><table><thead><tr><th>用例</th><th>结果</th><th>耗时/步骤</th><th>产物</th></tr></thead><tbody id="reportBody"></tbody></table></div>
+        </section>
+      </section>
+
+      <section id="singleView" class="workspace" hidden>
+        <div class="workspace-head"><div><h1>执行单个测试目标</h1><p>直接描述一个页面目标，由 Agent 动态观察并执行。</p></div></div>
+        <form id="runForm" class="input-band compact-form">
+          <div class="field"><label for="url">目标网址</label><input id="url" type="url" value="https://example.com" required /></div>
+          <div class="field"><label for="goal">测试目标</label><textarea id="goal" rows="5" required>验证页面可以正常打开，并检查页面标题存在</textarea></div>
+          <div class="form-actions"><div class="single-options"><label class="check"><input id="headless" type="checkbox" checked /> 无头模式</label><label class="check"><input id="batchMode" type="checkbox" checked /> 生成多条用例</label><label class="field batch-count" for="batchCases"><span>最多</span><input id="batchCases" type="number" min="2" max="30" value="5" /></label></div><button id="runButton" class="primary" type="submit">生成并执行测试</button></div>
+        </form>
+        <section id="singleBatchResult" class="report" hidden>
+          <div class="section-head"><div><p class="section-kicker">批量执行报告</p><h2>测试目标拆分结果</h2></div><div id="singleBatchStats" class="stats"></div></div>
+          <div class="table-wrap"><table><thead><tr><th>用例</th><th>结果</th><th>耗时/步骤</th><th>产物</th></tr></thead><tbody id="singleBatchBody"></tbody></table></div>
+        </section>
+        <section id="singleResult" class="single-result" hidden>
+          <div class="result-summary"><div class="section-head"><h2>执行结果</h2><span id="statusBadge" class="badge"></span></div><dl><div><dt>Run ID</dt><dd id="runId"></dd></div><div><dt>最终地址</dt><dd id="finalUrl"></dd></div><div><dt>页面标题</dt><dd id="title"></dd></div></dl><div class="links"><a id="screenshotLink" target="_blank">查看截图</a><a id="traceLink" target="_blank">下载 Trace</a></div></div>
+          <div class="code-panel"><h2>生成的 Playwright 代码</h2><pre><code id="code"></code></pre></div>
+          <div class="log-panel"><h2>运行日志</h2><pre><code id="logs"></code></pre></div>
+        </section>
+      </section>
+
+      <div id="busy" class="busy" hidden><span class="spinner"></span><span id="busyText">正在处理</span></div>
+      <div id="error" class="toast error" role="alert" hidden></div>
+    </main>
+    <script src="/static/app.js?v=4"></script>
+  </body>
+</html>
